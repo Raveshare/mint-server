@@ -1,5 +1,6 @@
 const { Web3 } = require("web3");
 const dotenv = require("dotenv");
+const callMintWithRewards = require("./functions/mintToZora");
 dotenv.config();
 
 async function main() {
@@ -14,6 +15,8 @@ async function main() {
       ),
     ],
   };
+
+  console.log("Subscribing to Raveshare contract events...");
 
   let subscription = await web3.eth.subscribe("logs", options);
 
@@ -63,6 +66,7 @@ async function main() {
       );
 
       console.log(transaction);
+      callMintWithRewards("0xc4aaac30f8091e645336e9e02a5675d51ee956de",transaction.sender);
     }
   });
   subscription.on("error", (err) => {

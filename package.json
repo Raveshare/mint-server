@@ -16,7 +16,7 @@
     "web3": "^4.2.2"
   },
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
   }
 }

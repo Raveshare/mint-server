@@ -4,12 +4,13 @@ const callMintWithRewards = require("./functions/mintToZora");
 dotenv.config();
 
 async function main() {
+  
   const web3 = new Web3(
     `wss://polygon-mumbai.infura.io/ws/v3/${process.env.INFURA_API_KEY}`
   );
 
   let options = {
-    topics: [
+    topics: [ 
       web3.utils.sha3(
         "ERC20TransactionSuccess(address,address,address,uint256,uint256,uint256)"
       ),
@@ -21,6 +22,7 @@ async function main() {
   let subscription = await web3.eth.subscribe("logs", options);
 
   subscription.on("data", (event) => {
+    if(event.address != process.env.RAVESHARE_CONTRACT_ADDRESS) return;
     if (event.topics.length == 3) {
       let transaction = web3.eth.abi.decodeLog(
         [
@@ -33,7 +35,7 @@ async function main() {
           {
             indexed: true,
             internalType: "address",
-            name: "receiver",
+            name: "mintAddress",
             type: "address",
           },
           {
@@ -65,8 +67,7 @@ async function main() {
         [event.topics[0], event.topics[1], event.topics[2]]
       );
 
-      console.log(transaction);
-      callMintWithRewards("0xc4aaac30f8091e645336e9e02a5675d51ee956de",transaction.sender);
+      callMintWithRewards(transaction.mintAddress,transaction.sender);
     }
   });
   subscription.on("error", (err) => {
